@@ -1,0 +1,21 @@
+app_name: TheEnabler
+version: 0.69
+debug: true
+
+# Endpoints
+models:
+  llm:
+    name: llama3.1:latest
+    endpoint: http://localhost:11434/v1/chat/completions
+    api_key: null
+    temperature: 0.3
+    max_tokens: 2000
+
+  embedding:
+    name: sentence-transformers:all-MiniLM-L6-v2
+    endpoint: http://localhost:11433
+    api_key: null
+
+
+
+

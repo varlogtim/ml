@@ -1,40 +1,11 @@
 #!/usr/bin/env python3
-import json
-import torch
 import chromadb
-import requests
-import llama_index
-import numpy as np
+
+from .ingestor import VectorDbInput
 
 from pathlib import Path
-
-# TODO remove
-from typing import List, Union, Dict, Any, Generator
-
 from collections.abc import Generator, Callable
-from itertools import islice
 
-from ingestor import VectorDbInput
-
-# from langchain_community.document_loaders.base import BaseLoader
-# from langchain_community.document_loaders.pdf import PyPDFDirectoryLoader
-# from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-# from langchain_core.prompts import ChatPromptTemplate
-
-from langchain_openai import ChatOpenAI
-
-# Actually just going to use this: 
-#  - https://medium.com/@callumjmac/implementing-rag-in-langchain-with-chroma-a-step-by-step-guide-16fc21815339
-
-# Parts:
-# 1. Parsing
-# 2. Embedding
-# 3. UI?
-
-#
-# Common
-#
 
 class VectorDatabase:
     # XXX Need to worry about reingesting the same documents:
@@ -42,7 +13,7 @@ class VectorDatabase:
             self, data_store: Path, collection_name: str, embed_func: Callable[[list[str]], list[list[float]]]
     ) -> None:
         """
-        Some thing....
+        Something....
 
         In the docs, when the collection is created, the embedding function is linked
         to that collection. (TODO: find the docs on this again)
@@ -124,44 +95,3 @@ class VectorDatabase:
             print(f"Unable to find matching results.")
 
         return filtered_results
-
-
-def main():
-    vectordb_store = Path("./vector_store_data")
-    vectordb_collection = "documents"
-    embed = EndpointEmbedding("http://localhost:11433")  # XXX EMBEDDING_FUNC
-
-    vector_db = VectorDatabase(vectordb_store, vectordb_collection, embed)
-
-    document_loader = PyPDFDirectoryLoader("./tmp_documents_src")
-    
-    # XXX Skip loading documents for now
-    vector_db.add_documents(document_loader)
-
-    prompt = "What is a thread?"
-    query_res = vector_db.query(prompt)
-    
-    # print(f"TTUCKER, get query response from Vector DB: {query_res}")
-
-    PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
-{context}
- - -
-Answer the question based on the above context: {question}
-"""
-
-    # TODO rewrite this crap
-    context_text = "\n\n - -\n\n".join(query_res)
-    prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    llm_prompt = prompt_template.format(context=context_text, question=prompt)
-    
-    #print(llm_prompt)
-
-    print("TTUCKER: this is prompt: {llm_prompt}\n\n")
-
-    llm = get_llm()
-    response = llm.invoke(llm_prompt)
-
-    print(response.content)
-
-#main()

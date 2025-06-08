@@ -2,8 +2,6 @@ import json
 import logging
 import requests
 
-from pprint import pprint
-
 from pathlib import Path
 from ingestor import (
     WebScraper, HtmlProcessor, TextProcessor, ChunkBatchProcessor,
@@ -40,22 +38,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-from langchain_openai import ChatOpenAI
-def get_llm():
-    # TODO I don't think I need this stupid ChatOpenAI class...
-    llm = ChatOpenAI(
-        openai_api_base="http://localhost:11434/v1",
-        openai_api_key="XXX_NOOP",
-        model_name="llama3.1:latest"
-    )
-    # Query:
-    # from langchain.schema import HumanMessage
-    # messages = [HumanMessage(content="Hello, what is the capital of France?")]
-    # response = llm.invoke(messages)
-
-    return llm
-
 class EndpointLLM:
+    # TODO impl to_json, from_json for serialization
     def __init__(
         self, endpoint: Url | str, model_name: str, system_prompt: str,
         temperature: float | None, max_tokens: int | None
@@ -88,8 +72,7 @@ class EndpointLLM:
             response.raise_for_status()
             result = response.json()
             
-            # Extract and print the response
-            # TODO figure out exact structure.
+            # TODO figure out exact structure and typehint return
             if "choices" in result and len(result["choices"]) > 0:
                 assistant_message = result["choices"][0]["message"]["content"]
                 print(f"Assistant: {assistant_message}")
@@ -101,6 +84,7 @@ class EndpointLLM:
 
 # docker run -p 11433:80 --gpus all ghcr.io/huggingface/text-embeddings-inference:turing-0.6 --model-id sentence-transformers/all-MiniLM-L6-v2
 class EndpointEmbedding(EmbeddingFunction):
+    # TODO impl to_json, from_json for serialization
     def __init__(self, endpoint: Url | str):
         self.endpoint = endpoint
         if isinstance(endpoint, str):

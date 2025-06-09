@@ -5,7 +5,7 @@ import logging
 from .enabler import Enabler
 from pathlib import Path
 from typing import Any
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +40,8 @@ class ConfigParser:
 
 class Server:
     def __init__(self, app: Enabler):
+        # TODO Figure out parameterization
+        self.path_to_frontend = "../frontend/dist/"
         self.flask = Flask(__name__)
         self._register_routes()
         self.app = app
@@ -48,6 +50,10 @@ class Server:
         self.flask.add_url_rule("/query", methods=["POST"], view_func=self.query)
         # TODO, make a GET that tells you how to use this?
         # TODO make a GET/POST for config?
+        self.flask.add_url_rule("/assets/<filename>", view_func=self.serve_assets)
+        # Serve React app for all other routes
+        self.flask.add_url_rule("/", defaults={"path": ""}, view_func=self.serve_react_app)
+        self.flask.add_url_rule("/<path:path>", view_func=self.serve_react_app)
     
     def query(self):
         if not request.is_json:
@@ -60,4 +66,11 @@ class Server:
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
+    def serve_react_app(self, path: str = ""):
+        # Serve index.html for SPA routes
+        return send_from_directory(self.path_to_frontend, "index.html")
+
+    def serve_assets(self, filename: str):
+        # Serve files from dist/assets
+        return send_from_directory(os.path.join(self.path_to_frontend, "assets"), filename)
 

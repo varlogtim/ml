@@ -1,10 +1,28 @@
-const Navigation: React.FC = () => {
+interface NavigationProps {
+  onSelect: (content: string) => void;
+}
+
+const Navigation: React.FC<NavigationProps> = ({ onSelect }) => {
   return (
     <nav className="p-4">
-      <h1 className="text-2xl font-bold mb-8">The Enabler</h1>
+      <h1 className="text-xl font-bold mb-4">The Enabler</h1>
       <ul className="space-y-2">
-        <li><a href="#" className="hover:text-blue-300">Home</a></li>
-        <li><a href="#" className="hover:text-blue-300">Logout</a></li>
+        <li>
+          <div
+            onClick={() => onSelect('query')}
+            className="cursor-pointer hover:text-blue-300"
+          >
+            Query
+          </div>
+        </li>
+        <li>
+          <div
+            onClick={() => onSelect('admin')}
+            className="cursor-pointer hover:text-blue-300"
+          >
+            Admin
+          </div>
+        </li>
       </ul>
     </nav>
   );

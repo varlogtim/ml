@@ -170,7 +170,6 @@ class Enabler:
         self.issues_vectordb = VectorDatabase(vectordb_data_path, "github_issues", self.embed_func)
         
 
-    # TODO Tim, quit thinking about persistence and crap and get this working... wth.
     def _load_config(self, config: dict[str, Any]):
         # Top-level settings
         self.app_name: str = config.get("app_name", "The Enabler")  # Muhahahahaha....
@@ -199,7 +198,7 @@ class Enabler:
         # XXX TODO XXX Think about how to set vectordb data storage path
 
     @classmethod
-    def from_json(cls, json_str: str) -> 'AppConfig':
+    def from_json(cls, json_str: str) -> 'Eabler':
         try:
             config_dict = json.loads(json_str)
             if not isinstance(config_dict, dict):

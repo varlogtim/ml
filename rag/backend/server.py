@@ -47,15 +47,34 @@ class Server:
         self.app = app
 
     def _register_routes(self):
-        self.flask.add_url_rule("/query", methods=["POST"], view_func=self.query)
+        self.flask.add_url_rule("/query", methods=["POST"], view_func=self.handle_query)
+        self.flask.add_url_rule("/config", methods=["GET", "POST"], view_func=self.handle_config)
         # TODO, make a GET that tells you how to use this?
         # TODO make a GET/POST for config?
+
         self.flask.add_url_rule("/assets/<filename>", view_func=self.serve_assets)
-        # Serve React app for all other routes
         self.flask.add_url_rule("/", defaults={"path": ""}, view_func=self.serve_react_app)
         self.flask.add_url_rule("/<path:path>", view_func=self.serve_react_app)
+
+    def handle_config(self):
+        if request.method == "GET":
+            return jsonify({"config": self.app.to_json()})
+        # POST
+        if not request.is_json:
+            return jsonify({"error": "JSON payload required"}), 400
+        data = request.get_json()
+        config = data.get("config")  # Should be a string of json
+        if not config:
+            return jsonify({"error": "Must have 'config' key in JSON payload"}), 400
+        try:
+            new_app = Enabler.from_json(config)
+            self.app = new_app
+            logger.info(f"Applied new config: {self.app.to_json()}")
+            return jsonify({"config": self.app.to_json()})
+        except Exception as e:
+            return jsonify({"error": f"Failed to apply config: {e}"}), 500
     
-    def query(self):
+    def handle_query(self):
         if not request.is_json:
             return jsonify({"error": "JSON payload required"}), 400
         data = request.get_json()

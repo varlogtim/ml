@@ -3,42 +3,33 @@
 // import viteLogo from '/vite.svg'
 import './App.css'
 
-
+import { useState } from 'react';
 import Navigation from './components/Navigation';
-import ReferenceTable from './components/ReferenceTable';
+import AdminArea from './components/AdminArea';
+////import ReferenceTable from './components/ReferenceTable';
 import ChatArea from './components/ChatArea';
 
 
-function App() {
-  //const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const [selectedContent, setSelectedContent] = useState<string>('query');
 
   return (
     <div className="flex h-screen w-screen bg-gray-100">
-      {/* Navigation Pane: 20% */}
-      <div className="w-50 flex-none bg-gray-800 text-white">
-        <Navigation />
+      <div className="w-1/5 bg-gray-800 text-white">
+        <Navigation onSelect={setSelectedContent} />
       </div>
-      {/* Main Content: 80% */}
-      <div className="flex-1 flex-col h-full flex p-4">
-        <div className="flex space-x-4 h-full">
-          {/* Reference Table */}
-          <div className="w-1/2 h-full bg-white rounded-lg shadow">
-            <div className="bg-white p-4">
-              <h2 className="text-2xl font-bold">References</h2>
-              <ReferenceTable />
-            </div>
-          </div>
-          {/* Chat Area */}
-          <div className="w-1/2 bg-white rounded-lg shadow">
-            <div className="bg-white p-4">
-              <h2 className="text-2xl font-bold">Chat</h2>
-              <ChatArea />
-            </div>
-          </div>
+      <div className="w-4/5 flex flex-col p-4">
+
+        {/* Dynamic Content */}
+        <div className="bg-white w-full flex-col flex rounded-lg shadow p-4">
+          <h2 className="text-2xl font-bold mb-4 p-3">
+            {selectedContent === 'query' ? 'Query' : 'Admin Area'}
+          </h2>
+          {selectedContent === 'query' ? <ChatArea /> : <AdminArea />}
         </div>
       </div>
     </div>
   )
 }
 
-export default App
+export default App;

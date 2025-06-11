@@ -24,9 +24,13 @@ build-%:
 build: build-frontend
 	@echo Done Building
 
+.PHONY: dev-frontend
+dev-frontend:
+	$(MAKE) -C frontend dev
+
 .PHONY: docker
 docker: build
-	docker build --progress=plain -t varlogtim/enabler:latest .
+	docker build -t varlogtim/enabler:latest .
 
 .PHONY: docker-push
 docker-push: docker

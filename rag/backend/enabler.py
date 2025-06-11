@@ -1,6 +1,7 @@
 import json
 import logging
 import requests
+import subprocess
 
 from pathlib import Path
 from pydantic import AnyUrl as Url
@@ -34,7 +35,6 @@ class EndpointLLM:
         # TODO bounds check
         self.temperature = 0.7 if temperature is None else temperature
         self.max_tokens = 100 if max_tokens is None else max_tokens
-
 
     def __call__(self, user_query: str, temperature: float | None = None, max_tokens: int | None = None):
         # TODO validate within temperature bounds
@@ -183,6 +183,10 @@ class Enabler:
         self.models_embed_endpoint: str = embed_config.get("endpoint", "http://localhost:11433/")
         self.models_embed_api_key: str = embed_config.get("api_key", None)
 
+        # Shell
+        shell_config = config.get("shell", {})
+        self.shell_timeout: int = shell_config.get("timeout", 30)
+
         # XXX TODO XXX Think about how to set vectordb data storage path
 
     @classmethod
@@ -215,6 +219,9 @@ class Enabler:
                     "endpoint": self.models_embed_endpoint,
                     "api_key": self.models_embed_api_key
                 }
+            },
+            "shell": {
+                "timeout": self.shell_timeout
             }
         }
 
@@ -253,3 +260,11 @@ class Enabler:
         )
 
         return self.answer_llm_func(answer_query)
+
+    def shell(self, cmd: str):
+        try:
+            # Run the command with a 30-second timeout
+            process = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+            return process.stdout
+        except subprocess.TimeoutExpired:
+            raise RuntimeError("Command execution exceeded 30 seconds and was stopped.")

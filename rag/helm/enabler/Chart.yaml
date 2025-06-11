@@ -2,7 +2,7 @@ apiVersion: v2
 name: the-enabler
 description: A Helm chart for The Enabler - an ML Enhanced Technical Assistant.
 type: application
-version: 0.0.3
+version: 0.0.6
 appVersion: "0.0.1"
 
 # Annotations for Helm Hub and artifact hub

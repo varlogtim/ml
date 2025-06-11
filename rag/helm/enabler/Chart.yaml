@@ -1,0 +1,34 @@
+apiVersion: v2
+name: the-enabler
+description: A Helm chart for The Enabler - an ML Enhanced Technical Assistant.
+type: application
+version: 0.0.3
+appVersion: "0.0.1"
+
+# Annotations for Helm Hub and artifact hub
+annotations:
+  artifacthub.io/links: |
+    - name: Source
+      url: https://github.com/varlogtim/ml/rag
+  artifacthub.io/operator: "true"
+  artifacthub.io/prerelease: "false"
+  artifacthub.io/containsSecurityUpdates: "false"
+
+# spec:
+#   volumes:
+#     - name: kubeflow-shared-pvc
+#       persistentVolumeClaim:
+#         claimName: kubeflow-shared-pvc
+#   volumeMounts:
+#     - mountPath: /mnt/shared
+#       name: kubeflow-shared-pvc
+
+keywords:
+  - react
+  - onboarding
+  - ai
+  - kubernetes
+
+maintainers:
+  - name: Tim Tucker
+    email: varlogtim@gmail.com

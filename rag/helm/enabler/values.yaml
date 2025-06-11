@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: varlogtim/enabler
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Resource requests and limits
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+# Ezmeral Unified Analytics (EzUA) Configuration
+ezua:
+  virtualService:
+    # The endpoint where the service will be accessible (e.g., "service-name.${DOMAIN_NAME}")
+    endpoint: "enabler.${DOMAIN_NAME}"
+    # The Istio Gateway to use (e.g., "istio-system/ezaf-gateway")
+    istioGateway: "istio-system/ezaf-gateway"
+
+# Application configuration
+app:
+  # Environment variables to inject into the application pod
+  envVars: {}

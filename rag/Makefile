@@ -1,3 +1,5 @@
+VERSION := $(shell cat ./VERSION)
+
 .PHONY: clean-%
 clean-%:
 	$(MAKE) -C $* clean
@@ -5,6 +7,10 @@ clean-%:
 .PHONY: clean
 clean: clean-frontend
 	@echo Done
+
+.PHONY: version
+version:
+	@echo $(VERSION)
 
 .PHONY: get-deps
 get-deps:
@@ -33,6 +39,17 @@ docker-serve:
 .PHONY: serve
 serve: build
 	python3 ./launch_backend.py
+
+CHART_PATH := "./helm/build/enabler-chart-$(VERSION).tar.gz"
+.PHONY: helm
+helm:
+	$(info building helm chart)
+	rm -rvf ./helm/build
+	mkdir ./helm/build
+	# Hacky... make this better.
+	sed -i 's/version: .*$$/version: $(VERSION)/' ./helm/enabler/Chart.yaml
+	tar zcvf $(CHART_PATH) -C ./helm/enabler ./
+	@echo $(CHART_PATH)
 
 .PHONY: check
 check:

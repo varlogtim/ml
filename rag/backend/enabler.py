@@ -2,24 +2,12 @@ import json
 import logging
 import requests
 
-from .ingestor import (
-    WebScraper,
-    HtmlProcessor,
-    TextProcessor,
-    ChunkBatchProcessor,
-    Html,
-    Markdown,
-    ChunkBatch,
-    Metadata,
-    VectorDbInput
-)
-from .vectordb import VectorDatabase
-
 from pathlib import Path
 from pydantic import AnyUrl as Url
 from collections.abc import Generator, Iterable
 from typing import Any
 
+from .vectordb import VectorDatabase
 from chromadb.utils.embedding_functions import EmbeddingFunction
 
 

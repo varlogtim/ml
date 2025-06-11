@@ -18,10 +18,17 @@ build-%:
 build: build-frontend
 	@echo Done Building
 
+.PHONY: docker
+docker: build
+	docker build --progress=plain -t enabler:latest .
 
 .PHONY: serve
 serve: build
 	python3 ./launch_backend.py
+
+.PHONY: serve-docker
+serve-docker:
+	docker run -p 127.0.0.1:8080:5000 enabler
 
 .PHONY: check
 check:

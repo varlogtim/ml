@@ -49,6 +49,7 @@ class Server:
     def _register_routes(self):
         self.flask.add_url_rule("/query", methods=["POST"], view_func=self.handle_query)
         self.flask.add_url_rule("/config", methods=["GET", "POST"], view_func=self.handle_config)
+        self.flask.add_url_rule("/shell", methods=["POST"], view_func=self.handle_shell)
         # TODO, make a GET that tells you how to use this?
         # TODO make a GET/POST for config?
 
@@ -84,6 +85,18 @@ class Server:
             return jsonify({"response": self.app.query(data.get("text"))})
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+
+    def handle_shell(self):
+        if not request.is_json:
+            return jsonify({"error": "JSON payload required"}), 400
+        data = request.get_json()
+        cmd = data.get("cmd")  # Should be a string of json
+        if not cmd:
+            return jsonify({"error": "Must have 'cmd' key in JSON payload"}), 400
+        try:
+            return jsonify({"cmd": cmd, "output": self.app.shell(cmd)})
+        except Exception as e:
+            return jsonify({"error": f"Failed to execute command: {e}"}), 500
 
     def serve_react_app(self, path: str = ""):
         # Serve index.html for SPA routes

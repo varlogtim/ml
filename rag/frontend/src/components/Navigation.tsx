@@ -23,6 +23,14 @@ const Navigation: React.FC<NavigationProps> = ({ onSelect }) => {
             Admin
           </div>
         </li>
+        <li>
+          <div
+            onClick={() => onSelect('shell')}
+            className="cursor-pointer hover:text-blue-300"
+          >
+            Shell
+          </div>
+        </li>
       </ul>
     </nav>
   );

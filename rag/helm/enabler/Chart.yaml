@@ -2,10 +2,10 @@ apiVersion: v2
 name: the-enabler
 description: A Helm chart for The Enabler - an ML Enhanced Technical Assistant.
 type: application
-version: 0.0.6
+version: 0.0.7
+# appVersion is set by make helm
 appVersion: "0.0.1"
 
-# Annotations for Helm Hub and artifact hub
 annotations:
   artifacthub.io/links: |
     - name: Source
@@ -13,15 +13,6 @@ annotations:
   artifacthub.io/operator: "true"
   artifacthub.io/prerelease: "false"
   artifacthub.io/containsSecurityUpdates: "false"
-
-# spec:
-#   volumes:
-#     - name: kubeflow-shared-pvc
-#       persistentVolumeClaim:
-#         claimName: kubeflow-shared-pvc
-#   volumeMounts:
-#     - mountPath: /mnt/shared
-#       name: kubeflow-shared-pvc
 
 keywords:
   - react

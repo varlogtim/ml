@@ -154,7 +154,7 @@ class Enabler:
         )
         # TODO Think about a way to parameterize this.
         # .... when it's inside the container we can hardcode it.
-        vectordb_data_path = "/home/ttucker/tmp/vector_db/"
+        vectordb_data_path = "/tmp/vector_db/"
         self.issues_vectordb = VectorDatabase(vectordb_data_path, "github_issues", self.embed_func)
         
 
@@ -263,8 +263,7 @@ class Enabler:
 
     def shell(self, cmd: str):
         try:
-            # Run the command with a 30-second timeout
-            process = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+            process = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=self.shell_timeout)
             return process.stdout
         except subprocess.TimeoutExpired:
             raise RuntimeError("Command execution exceeded 30 seconds and was stopped.")

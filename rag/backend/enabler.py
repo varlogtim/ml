@@ -23,12 +23,19 @@ class EndpointLLM:
     # TODO impl to_json, from_json for serialization
     def __init__(
         self, endpoint: Url | str, model_name: str, system_prompt: str,
-        temperature: float | None, max_tokens: int | None
+        temperature: float | None = None, max_tokens: int | None = None,
+        api_key: str | None = None
     ) -> None:
         self.endpoint = endpoint
         if isinstance(endpoint, str):
             self.endpoint = Url(endpoint)
-        self.headers={"Content-Type": "application/json"}
+        self.headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        if api_key:
+            self.headers["Authorization"] = f"Bearer {api_key}"
+
         self.model_name = model_name
         self.system_prompt = system_prompt
 
@@ -65,11 +72,16 @@ class EndpointLLM:
 # docker run -p 11433:80 --gpus all ghcr.io/huggingface/text-embeddings-inference:turing-0.6 --model-id sentence-transformers/all-MiniLM-L6-v2
 class EndpointEmbedding(EmbeddingFunction):
     # TODO impl to_json, from_json for serialization
-    def __init__(self, endpoint: Url | str):
+    def __init__(self, endpoint: Url | str, api_key: str | None = None):
         self.endpoint = endpoint
         if isinstance(endpoint, str):
             self.endpoint = Url(endpoint)
-        self.headers={"Content-Type": "application/json"}
+        self.headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        if api_key:
+            self.headers["Authorization"] = f"Bearer {api_key}"
 
     def __call__(self, texts: list[str]) -> list[list[float]]:
         if not isinstance(texts, list) or not all(isinstance(t, str) for t in texts):
@@ -143,14 +155,16 @@ class Enabler:
     def __init__(self, config: dict[str, Any]):
         self._load_config(config)
         self.embed_func = EndpointEmbedding(
-            self.models_embed_endpoint,  # XXX Handle auth
+            endpoint=self.models_embed_endpoint,
+            api_key=self.models_embed_api_key,
         )
         self.answer_llm_func = EndpointLLM(
             endpoint=self.models_llm_endpoint,
             model_name=self.models_llm_name,
             system_prompt=ANSWER_SYSTEM_PROMPT,
             temperature=self.models_llm_temperature,
-            max_tokens=self.models_llm_max_tokens
+            max_tokens=self.models_llm_max_tokens,
+            api_key=self.models_llm_api_key,
         )
         # TODO Think about a way to parameterize this.
         # .... when it's inside the container we can hardcode it.
@@ -160,7 +174,7 @@ class Enabler:
 
     def _load_config(self, config: dict[str, Any]):
         # Top-level settings
-        self.app_name: str = config.get("app_name", "The Enabler")  # Muhahahahaha....
+        self.app_name: str = config.get("app_name", "The Enabler")
         self.version: str = config.get("version", "0.6.9")
         self.debug_mode: bool = config.get("debug", False)
         self.max_retries: int = config.get("max_retries", 3)
